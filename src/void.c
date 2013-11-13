@@ -651,8 +651,14 @@ static int readview(lua_State *L){
 			break;
 		default: luaL_argerror(L,2,"invalid argument");
 	}
-	if(ret == SOCKET_ERROR) lua_pushnil(L); else lua_pushinteger(L,ret);
-	return 1;
+	if(ret == SOCKET_ERROR){
+		lua_pushnil(L);
+		lua_pushinteger(L,ERRNO);
+		return 2;
+	}else{
+		lua_pushinteger(L,ret);
+		return 1;
+	}
 }
 
 static int writeview(lua_State *L){
@@ -662,7 +668,7 @@ static int writeview(lua_State *L){
 	int ret;
 	switch(lua_type(L,2)){
 		case LUA_TNUMBER:
-			ret = RECV(((SOCKET)luaL_checkinteger(L,2)),ud->data,ud->size);
+			ret = SEND(((SOCKET)luaL_checkinteger(L,2)),ud->data,ud->size);
 			break;
 		case LUA_TUSERDATA:
 			fp = *(FILE**) luaL_checkudata(L,2,LUA_FILEHANDLE);
@@ -670,8 +676,14 @@ static int writeview(lua_State *L){
 			break;
 		default: luaL_argerror(L,2,"invalid argument");
 	}
-	if(ret == SOCKET_ERROR) lua_pushnil(L); else lua_pushinteger(L,ret);
-	return 1;
+	if(ret == SOCKET_ERROR){
+		lua_pushnil(L);
+		lua_pushinteger(L,ERRNO);
+		return 2;
+	}else{
+		lua_pushinteger(L,ret);
+		return 1;
+	}
 }
 
 static const struct luaL_reg voidmethods [] = {

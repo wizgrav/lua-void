@@ -43,13 +43,16 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 #define pthread_cond_destroy(c) (void)c
 #define pthread_cond_wait(c,m) SleepConditionVariableCS(c,m,INFINITE)
 #define pthread_cond_broadcast(c) WakeAllConditionVariable(c)
+#define SEND(s,d,l) WSASend(s,d,l)
+#define RECV(s,d,l) WSARecv(s,d,l)
+#define ERRNO errno
 #else
 #include <pthread.h>
 #define SOCKET int
 #define SOCKET_ERROR -1
 #define SEND(s,d,l) write(s,d,l)
 #define RECV(s,d,l) read(s,d,l)
-
+#define ERRNO WSAGetLastError()
 #endif
 
 #if defined __linux
