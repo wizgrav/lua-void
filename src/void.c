@@ -625,10 +625,10 @@ static int callview(lua_State *L){
 		case VOID_TYPE_S8: MULTIREAD(int8_t,1,0,integer,lua_Integer); break; 
 		case VOID_TYPE_U16: MULTIREAD(uint16_t,2,1,integer,lua_Integer); break; 
 		case VOID_TYPE_S16: MULTIREAD(int16_t,2,1,integer,lua_Integer); break; 
-		case VOID_TYPE_U32: MULTIREAD(uint32_t,4,2,integer,lua_Integer); break; 
+		case VOID_TYPE_U32: MULTIREAD(uint32_t,4,2,number,lua_Number); break; 
 		case VOID_TYPE_S32: MULTIREAD(int32_t,4,2,integer,lua_Integer); break; 
-		case VOID_TYPE_FLOAT: MULTIREAD(float,4,2,integer,lua_Integer); break; 
-		case VOID_TYPE_DOUBLE: MULTIREAD(double,8,3,integer,lua_Integer); break; 
+		case VOID_TYPE_FLOAT: MULTIREAD(float,4,2,number,lua_Number); break; 
+		case VOID_TYPE_DOUBLE: MULTIREAD(double,8,3,number,lua_Number); break; 
 	}
 	return j;
 }
