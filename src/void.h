@@ -48,6 +48,7 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 #define ERRNO WSAGetLastError()
 #else
 #include <pthread.h>
+#include <errno.h>
 #define SOCKET int
 #define SOCKET_ERROR -1
 #define SEND(s,d,l) write(s,d,l)
