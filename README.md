@@ -13,7 +13,7 @@ Allocates a new void.view or (optionally)reallocates an existing one with size b
 Returns a void.view representing the full slice of the underlying buffer
 
 
-###void.link = void[ string ] (index operator)###
+###void.link = void[_string_] (index operator)###
 
 Returns a reference to a shared queue for interthread buffer transfer
 
@@ -94,7 +94,7 @@ You can attach a gc metamethod on the link metatable which triggers when you loo
 
 gets the count of buffers currently attached to the share queue.
 
-###void.view | nil = link[number index] (index operator - getter)###
+###void.view | nil = link[_index_] (index operator - getter)###
 
 It pops a buffer from the queue and returns a new view with the buffer attached to it
 
@@ -102,7 +102,7 @@ If the queue is empty or its buffer count is less than index it returns nil
 
 A negative index will block the thread until the operation, indicated by the absolute value of the index, can be performed
 
-###link[number index] = string | void.view | nil (index operator - setter)###
+###link[_index_] = string | void.view | nil (index operator - setter)###
 
 It pushes the buffer provided to the queue(or a copy of the string or doesn't push if nil was provided)
 
