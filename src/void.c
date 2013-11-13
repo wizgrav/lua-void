@@ -594,7 +594,7 @@ static int nindexview(lua_State *L){
 				if(len == 4){
 					switch(str[0]){
 						case 't': if(!strcmp(str+1,"ype")){ ud->type=luaL_checkoption(L,3,NULL,types); return 0;} break;
-						case 'f': if(!strcmp(str+1,"rom")){i=luaL_checkint(L,3); if(--i < ud->blob->size) ud->data = ud->blob->data+i;
+						case 'f': if(!strcmp(str+1,"rom")){i=luaL_checkint(L,3); if(--i < ud->blob->size) ud->data = ud->blob->data+i; if(ud->data-ud->blob->data + ud->size > ud->blob->size) ud->size = ud->blob->size - (ud->data-ud->blob->data);
 							return 0;} break;
 						case 's': if(!strcmp(str+1,"ize")){if((i=luaL_optint(L,3,0)) <= ud->blob->size) ud->size=i; return 0;} break;
 					}
