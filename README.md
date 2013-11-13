@@ -1,6 +1,3 @@
-Lua Void
-========
-
 ###void = require "void"###
 
 A module that facilitates typed accesing of buffers and transferring them
@@ -16,7 +13,7 @@ Allocates a new void.view or (optionally)reallocates an existing one with size b
 Returns a void.view representing the full slice of the underlying buffer
 
 
-###void.link = void[string] (index operator)###
+###void.link = void[ string ] (index operator)###
 
 Returns a reference to a shared queue for interthread buffer transfer
 
@@ -58,7 +55,7 @@ gets the total size in bytes of the underlying buffer
 
 gets the number of elements of the view based on type,from and size
 
-###view[number index] = number (index operator)###
+###view[_index_] = number (index operator)###
 
 Get/set the specified indexes based on type
 
