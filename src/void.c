@@ -27,7 +27,8 @@ THE SOFTWARE.
 #include "void.h"
 
 static int indexvoid(lua_State *L){
-	int32_t hash=0,len;
+	int32_t hash=0;
+	size_t len;
 	link_t *ud,*nd,**sd;
 	const uint8_t *str = NULL;
 	str = luaL_checklstring(L,2,&len);
@@ -299,7 +300,8 @@ static int nindexvoid(lua_State *L){
 	link_t *link;
 	blob_t *blob,*b;
 	int32_t release=0;
-	int32_t hash,len;
+	int32_t hash;
+	size_t len;
 	char *str = NULL;
 	str = (char *)lua_tolstring(L,2,&len);
 	if(!str) LUA_ERROR("Link identifier was not a string");
