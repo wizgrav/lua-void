@@ -580,7 +580,7 @@ static int nindexview(lua_State *L){
 							case VOID_TYPE_U16: u.u16 = (uint16_t)lua_tointeger(L,3); while(len < ud->size){  *((uint16_t *)(ud->data+len))  = u.u16; len += 2;} break;
 							case VOID_TYPE_S16: u.s16 = (int16_t)lua_tointeger(L,3); while(len < ud->size){  *((int16_t *)(ud->data+len))  = u.s16; len+=2;} break;
 							case VOID_TYPE_U32: u.u32 = (uint32_t)lua_tointeger(L,3); while(len < ud->size){  *((uint32_t *)(ud->data+len))  = u.u32; len+=4;} break;
-							case VOID_TYPE_S32: u.s32 = (int32_t)lua_tointeger(L,3); while(len < ud->size){  *((sint32_t *)(ud->data+len))  = u.s32; len+=4;} break;
+							case VOID_TYPE_S32: u.s32 = (int32_t)lua_tointeger(L,3); while(len < ud->size){  *((int32_t *)(ud->data+len))  = u.s32; len+=4;} break;
 							case VOID_TYPE_FLOAT: u.fl = (float)lua_tointeger(L,3); while(len < ud->size){  *((float *)(ud->data+len))  = u.u32; len+=4;} break;
 							case VOID_TYPE_DOUBLE: u.dl = (double)lua_tointeger(L,3); while(len < ud->size){  *((double *)(ud->data+len))  = u.dl; len+=8;} break;
 						}
