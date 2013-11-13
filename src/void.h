@@ -98,7 +98,7 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 #define MULTIREAD(type,incr,shift,unit,lt)\
 	k=j<<shift;\
 	i=i<<shift;\
-	if(ud->size < i + j){ lua_pushnil(L);return 1;}\
+	if(ud->size < i + k){ lua_pushnil(L);return 1;}\
 	for(s = (void *) (ud->data+i),e = s + k;s != e; s+=incr)\
 		lua_push ## unit(L,(lt)*((type *)s))
 #define VCLOSURE(name,func)\

@@ -620,6 +620,7 @@ static int callview(lua_State *L){
 			break;
 	}
 	i--;
+	luaL_checkstack(L,j,"too many elements requested");
 	switch(ud->type){
 		case VOID_TYPE_U8: MULTIREAD(uint8_t,1,0,integer,lua_Integer); break; 
 		case VOID_TYPE_S8: MULTIREAD(int8_t,1,0,integer,lua_Integer); break; 
