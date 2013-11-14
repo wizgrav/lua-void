@@ -6,14 +6,14 @@ between threads (works with all threading systems). The void.view userdata point
 Main module functions
 ---------
 
-###void.view = void(number size,_view_) (call operator)###
+###void.view = void(size,view) (call operator)###
 
 Allocates a new void.view or (optionally)reallocates an existing one with size bytes
 
 Returns a void.view representing the full slice of the underlying buffer
 
 
-###void.link = void[_string_] (index operator)###
+###void.link = void\[string\] (index operator)###
 
 Returns a reference to a shared queue for interthread buffer transfer
 
@@ -55,17 +55,17 @@ gets the total size in bytes of the underlying buffer
 
 gets the number of elements of the view based on type,from and size
 
-###view[_index_] = number (index operator)###
+###view\[index\] = number (index operator)###
 
 Get/set the specified indexes based on type
 
-###view(_number index_, _number count_=1) (call operator)###
+###view(index, count=1) (call operator)###
 
 Mass getter. Returns _count_ values starting from index
 
 When called with no arguments returns the view slice as a string
 
-###view[0] = void.view | string | number###
+###view\[0\] = void.view | string | number###
 
 Gets a lightuserdata pointing at the start of the slice or
 
@@ -94,7 +94,7 @@ You can attach a gc metamethod on the link metatable which triggers when you loo
 
 gets the count of buffers currently attached to the share queue.
 
-###void.view | nil = link[_index_] (index operator - getter)###
+###void.view | nil = link\[index\] (index operator - getter)###
 
 It pops a buffer from the queue and returns a new view with the buffer attached to it
 
@@ -102,7 +102,7 @@ If the queue is empty or its buffer count is less than index it returns nil
 
 A negative index will block the thread until the operation, indicated by the absolute value of the index, can be performed
 
-###link[_index_] = string | void.view | nil (index operator - setter)###
+###link\[index\] = string | void.view | nil (index operator - setter)###
 
 It pushes the buffer provided to the queue(or a copy of the string or doesn't push if nil was provided)
 
@@ -112,10 +112,10 @@ A negative index will block the thread until the operation, indicated by the abs
 
 The provided void.view can come out bufferless(neutered) in this case a buffer must be reattached to access it again
 
-###link(void.view,_boolean wait_) ###
+###link(view,wait) ###
 
 It swaps the buffer at the top of the queue with the one provided, if the queue is empty or __the last push/swap happened on a different thread__. This is useful to implement triple buffering setups
 
 If wait is provided and true it will block until another thread pushes/swaps a buffer
 
-(LINUX ONLY) with no arguments it returns an eventfd that triggers when something is pushed/swapped on the queue
+(LINUX ONLY) when called with no arguments, returns an eventfd that triggers when something is pushed/swapped on the queue

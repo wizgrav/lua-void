@@ -30,7 +30,13 @@ THE SOFTWARE.
 #include <string.h>
 
 #if defined _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+
 typedef CRITICAL_SECTION pthread_mutex_t;
 #define PTHREAD_MUTEX_INITIALIZER {(void *)-1,-1,0,0,0,0}
 #define pthread_mutex_init(m,a) InitializeCriticalSection(m)
@@ -43,8 +49,8 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 #define pthread_cond_destroy(c) (void)c
 #define pthread_cond_wait(c,m) SleepConditionVariableCS(c,m,INFINITE)
 #define pthread_cond_broadcast(c) WakeAllConditionVariable(c)
-#define SEND(s,d,l) WSASend(s,d,l)
-#define RECV(s,d,l) WSARecv(s,d,l)
+#define SEND(s,d,l) WSASend(s,d,l,0)
+#define RECV(s,d,l) WSARecv(s,d,l,0)
 #define ERRNO WSAGetLastError()
 #else
 #include <pthread.h>
