@@ -696,6 +696,8 @@ static int findview(lua_State *L){
 		found = strstr((const char *)ud->data,str);
 		if(found){
 			lua_pushinteger(L,(lua_Integer) (found - ((char *)ud->data))+1);
+			lua_pushinteger(L,(lua_Integer) (found - ((char *)ud->blob->data))+1);
+			return 2;
 		}else{
 			lua_pushnil(L);
 		}

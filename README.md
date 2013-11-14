@@ -73,28 +73,28 @@ Sets the contents of the view from the provided string/view slice or
 
 sets all elements of the slice to the provided number(casted to type)
 
-###view:read(filehandle | number fd)###
+### bytes|nil = view:read(filehandle | number fd)###
 
 reads view.size bytes from the filehandle or socket fd(socket:getfd())
 
 returns the amount read or nil if some error occured
 
-###view:write(filehandle | number fd)###
+### bytes|nil = view:write(filehandle | number fd)###
 
 reads view.size bytes from the filehandle or socket fd(socket:getfd())
 
 returns the amount read or nil if some error occured
 
-###view:find(string)###
+### view_index, buffer_index = view:find(substring)###
 
-Finds the provided string in the current view slice
+Locates the index of the provided substring ***in the current view slice***
 
-returns the index, in the current slice of the buffer, where the string starts or nil if not found
+returns the indexes, relative to the view slice and the full buffer, where the substring starts or nils if it wasn't found.
 
 ***
 void.link
 ---------
-You can attach a gc metamethod on the link metatable which triggers when you loose reference locally, the shared queue is automatically disposed when there are no references to it and doen't have any buffers attached. In addition all other properties you attach to the metatable will be available to all void.links ***in the same thread you set them***
+You can attach a gc metamethod on the link metatable which triggers when you lose the local reference, but the shared queue will be automatically disposed when there are no references to it and doen't have any buffers attached. In addition all other properties you attach to the metatable will be available to all void.links ***in the same thread you set them***
 
 ### #link (len operator)###
 
