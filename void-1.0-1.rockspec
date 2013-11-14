@@ -28,7 +28,7 @@ build = {
 		unix = {
 			modules = {
 				void = {
-					 libraries = {"pthreads"},
+					 libraries = {"pthread"},
 				}
 			}
 		},
