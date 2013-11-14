@@ -6,9 +6,9 @@ between threads (works with all threading systems). The void.view userdata point
 Main module functions
 ---------
 
-###void.view = void(size,view) (call operator)###
+###void.view = void(size, _view_) (call operator)###
 
-Allocates a new void.view or (optionally)reallocates an existing one with size bytes
+Allocates a new void.view or reallocates an existing one, if provided, with size bytes
 
 Returns a void.view representing the full slice of the underlying buffer
 
@@ -84,6 +84,12 @@ returns the amount read or nil if some error occured
 reads view.size bytes from the filehandle or socket fd(socket:getfd())
 
 returns the amount read or nil if some error occured
+
+###view:find(string)###
+
+Finds the provided string in the current view slice
+
+returns the index, in the current slice of the buffer, where the string starts or nil if not found
 
 ***
 void.link

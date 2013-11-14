@@ -5,16 +5,16 @@ source = {
 	branch= "master"
 }
 description = {
-   summary = "Memory buffers that support typed accesing and transfer between threads.",
+   summary = "Memory buffers that support typed accesing and cross thread transfer.",
    detailed = [[
-   Void is module for memory buffer allocation and manipulation.
+   Void is a module for memory buffer allocation and manipulation.
    The module features:
-   * Buffers sizes up to 2GB and accessors for signed or unsigned types.
-   * Proxy userdata as views pointing to slices of the allocated memory.
-   * Named queues which allow for transfering buffers between threads.
-   * Common operations like writing to/reading from files and sockers. 
+   * Proxy userdata(views) that point to slices of underlying buffers.
+   * Buffer up to 2GB that can be accessed as signed or unsigned types.
+   * Named shared queues that allow cross thread transfer of buffers.
+   * Common operations like writing to/reading from files and sockets. 
    ]],
-   homepage = "http://www.wizgrav.com",
+   homepage = "http://www.github.com/wizgrav/lua-void",
    license = "MIT/X11",
    maintainer="Yannis Gravezas <wizgrav@gmail.com>"
 }

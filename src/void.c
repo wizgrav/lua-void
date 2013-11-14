@@ -304,7 +304,7 @@ static int nindexvoid(lua_State *L){
 	size_t len;
 	char *str = NULL;
 	str = (char *)lua_tolstring(L,2,&len);
-	if(!str) LUA_ERROR("Link identifier was not a string");
+	if(!str) LUA_ERROR("link identifier must be a string");
 	luaL_checktype(L,3,LUA_TNIL);
 	HASH(hash,str,len);
 	link = Void.bins[hash & HASH_MASK];
@@ -408,17 +408,13 @@ static int printview(lua_State *L){
 
 static int callvoid(lua_State *L){
 	void_t *ud=NULL;
-	blob_t *bd = NULL;
-	void *old;
+	blob_t *old = NULL;
 	uint32_t size;
-	int32_t n = lua_gettop(L);
-	if(lua_isuserdata(L,2)){
-		ud = luaL_checkudata(L,2,"void.view");
-		if(ud->blob){
-			old=(void *)ud->blob;
-		}
-		size = (uint32_t)luaL_optinteger(L,3,0);
-		lua_pushvalue(L,2);
+	if(lua_isuserdata(L,3)){
+		ud = luaL_checkudata(L,3,"void.view");
+		if(ud->blob) old=ud->blob;
+		size = (uint32_t)luaL_optinteger(L,2,0);
+		lua_pushvalue(L,3);
 	}else{
 		size = (uint32_t)luaL_optinteger(L,2,0);
 		ud = (void_t *) lua_newuserdata(L,sizeof(void_t));
@@ -427,11 +423,11 @@ static int callvoid(lua_State *L){
 		ud->type=0;
 		old=NULL;
 	}
-	if(size > 2147483647) LUA_ERROR("Size cannot exceed 2GB.");
-	ud->blob = (blob_t *) realloc(old,sizeof(blob_t)+size);
-	ud->data = ud->blob->data;
-	ud->blob->size = size;
-	ud->size = size;
+	if(size > 2147483647) LUA_ERROR("size cannot exceed 2GB");
+	ud->blob = size ? (blob_t *) realloc(old,sizeof(blob_t)+size):NULL;
+	ud->data = ud->blob ? ud->blob->data:NULL;
+	ud->blob->size = ud->blob ? size:0;
+	ud->size = ud->blob->size;
 	return 1;
 }
 
@@ -546,14 +542,14 @@ static int nindexview(lua_State *L){
 	if(index){
 		index--;
 		switch(ud->type){
-			case VOID_TYPE_U8:  if(index < ud->size)  ((uint8_t *)(ud->data))[index] = (uint8_t)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_S8:  if(index < ud->size)  ((char *)(ud->data))[index] = (char)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_U16: if(index < ud->size >> 1)  ((uint16_t *)(ud->data))[index] = (uint16_t)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_S16: if(index < ud->size >> 1)  ((int16_t *)(ud->data))[index] = (int16_t)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_U32: if(index < ud->size >> 2)  ((uint32_t *)(ud->data))[index] = (uint32_t)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_S32: if(index < ud->size >> 2)  ((int32_t *)(ud->data))[index] = (int32_t)lua_tointeger(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_FLOAT: if(index < ud->size >> 2)  ((float *)(ud->data))[index] = (float)lua_tonumber(L,3); else LUA_ERROR("Invalid index"); break;
-			case VOID_TYPE_DOUBLE: if(index < ud->size >> 3)  ((double *)(ud->data))[index] = (double)lua_tonumber(L,3); else LUA_ERROR("Invalid index"); break;
+			case VOID_TYPE_U8:  if(index < ud->size)  ((uint8_t *)(ud->data))[index] = (uint8_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_S8:  if(index < ud->size)  ((char *)(ud->data))[index] = (char)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_U16: if(index < ud->size >> 1)  ((uint16_t *)(ud->data))[index] = (uint16_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_S16: if(index < ud->size >> 1)  ((int16_t *)(ud->data))[index] = (int16_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_U32: if(index < ud->size >> 2)  ((uint32_t *)(ud->data))[index] = (uint32_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_S32: if(index < ud->size >> 2)  ((int32_t *)(ud->data))[index] = (int32_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_FLOAT: if(index < ud->size >> 2)  ((float *)(ud->data))[index] = (float)lua_tonumber(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_DOUBLE: if(index < ud->size >> 3)  ((double *)(ud->data))[index] = (double)lua_tonumber(L,3); else LUA_ERROR("invalid index"); break;
 		}
 	}else{
 		size_t len;
@@ -686,6 +682,30 @@ static int writeview(lua_State *L){
 	}
 }
 
+static int findview(lua_State *L){
+	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
+	luaL_argcheck(L,ud->data,1,"Neutered view");
+	FILE *fp;
+	int ret;
+	size_t len;
+	char c,*found;
+	const char *str = lua_tolstring(L,2,&len);
+	if(str && len){
+		c = ud->data[ud->size];
+		ud->data[ud->size] = 0;
+		found = strstr((const char *)ud->data,str);
+		if(found){
+			lua_pushinteger(L,(lua_Integer) found - ud->data);
+		}else{
+			lua_pushnil(L);
+		}
+		ud->data[ud->size] = c;
+	}else{
+		lua_pushnil(L);
+	}
+	return 1;
+}
+
 static const struct luaL_reg voidmethods [] = {
 	{"__index", indexvoid},
 	{"__newindex", nindexvoid},
@@ -704,6 +724,7 @@ static const struct luaL_reg viewmethods [] = {
 static const struct luaL_reg moremethods [] = {
 	{"read", readview},
 	{"write", writeview},
+	{"find", findview},
 	{NULL, NULL}
 };
 
