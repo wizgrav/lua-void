@@ -440,11 +440,11 @@ static int gcview(lua_State *L){
 	}
 	if(ud->blob){ FREEBLOB(ud);}
 	lua_pushvalue(L,1);
-	lua_rawget(L,lua_upvalueindex(L,1));
+	lua_rawget(L,lua_upvalueindex(1));
 	if(lua_type(L,-1)!=LUA_TNIL){
 		lua_pushvalue(L,1);
 		lua_pushnil(L);
-		lua_rawset(L,lua_upvalueindex(L,1));	
+		lua_rawset(L,lua_upvalueindex(1));	
 	}
 	if(error) lua_error(L);
 	return 0;
