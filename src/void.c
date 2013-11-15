@@ -119,7 +119,7 @@ static int indexlink(lua_State *L){
 
 static int nindexlink(lua_State *L){
 	link_t *link;
-	blob_t *blob;
+	blob_t *blob,*bl;
 	void_t *ud;
 	int32_t wait;
 #if defined __linux
@@ -180,7 +180,9 @@ static int nindexlink(lua_State *L){
 			link->len++;
 			link->state=L;
 			if(link->waiters) pthread_cond_broadcast(&link->cond);
+#if defined __linux
 			if(link->fd){ u=1; write(link->fd,&u,sizeof(uint64_t));};
+#endif
 		}
 	}else{
 		if(blob){ 
@@ -192,7 +194,9 @@ static int nindexlink(lua_State *L){
 		blob=link->head;
 		QUEUE_POP(link);
 		if(link->waiters) pthread_cond_broadcast(&link->cond);
+#if defined __linux
 		if(link->fd){ u=1; write(link->fd,&u,sizeof(uint64_t));};
+#endif
 	}
 	pthread_mutex_unlock(&link->mutex);
 	if(blob) 
@@ -200,7 +204,9 @@ static int nindexlink(lua_State *L){
 			ud->blob=blob;
 			ud->data=blob->data;
 			ud->size=blob->size;
-		} else free(blob);
+		}else{
+			free(blob);
+		}
 	return 0;
 }
 
@@ -296,49 +302,6 @@ static int calllink(lua_State *L){
 	return 1;
 }
 
-static int nindexvoid(lua_State *L){
-	link_t *link;
-	blob_t *blob,*b;
-	int32_t release=0;
-	int32_t hash;
-	size_t len;
-	char *str = NULL;
-	str = (char *)lua_tolstring(L,2,&len);
-	if(!str) LUA_ERROR("link identifier must be a string");
-	luaL_checktype(L,3,LUA_TNIL);
-	HASH(hash,str,len);
-	link = Void.bins[hash & HASH_MASK];
-	for(; link != NULL; link = link->next){
-		if(link->hash == hash)
-			if(!strcmp(link->key,str))
-				break;
-	}
-	if(!link) return 0;
-	pthread_mutex_lock(&link->mutex);
-	blob = link->head;
-	link->head=NULL;
-	link->tail=NULL;
-	link->len=0;
-	if(!link->count){
-		release=1;
-		pthread_mutex_lock(&Void.mutex);
-		LIST_REMOVE(link);
-		pthread_mutex_unlock(&Void.mutex);
-	}
-	pthread_mutex_unlock(&link->mutex);
-	if(release){
-		free(link->key);
-		free(link);
-	}
-	if(blob){
-		do{
-			b=blob;
-			blob=b->next;
-			free(b);
-		}while(blob);
-	}
-	return 0;
-}
 static int gclink(lua_State *L){
 	link_t *link,**sp;
 	int32_t release=0,error=0;
@@ -465,24 +428,25 @@ DFUNC("__le",leview,4);
 
 static int gcview(lua_State *L){
 	void_t *ud;
+	int error=0;
 	VIEWCHECK(ud,1);
 	lua_pushlstring(L,"__gc",4);
 	lua_rawget(L,lua_upvalueindex(1));
 	if(lua_isfunction(L,-1)){
 		lua_pushvalue(L,1);
 		if(lua_pcall(L,1,0,0)){
-			if(ud->blob){ FREEBLOB(ud);}
-			lua_error(L);
+			error=1;
 		}
 	}
 	if(ud->blob){ FREEBLOB(ud);}
-	lua_pushlightuserdata(L,(void *) ud);
-	lua_rawget(L,LUA_REGISTRYINDEX);
+	lua_pushvalue(L,1);
+	lua_rawget(L,lua_upvalueindex(L,1));
 	if(lua_type(L,-1)!=LUA_TNIL){
-		lua_pushlightuserdata(L,(void *) ud);
+		lua_pushvalue(L,1);
 		lua_pushnil(L);
-		lua_rawset(L,LUA_REGISTRYINDEX);	
+		lua_rawset(L,lua_upvalueindex(L,1));	
 	}
+	if(error) lua_error(L);
 	return 0;
 }
 
@@ -513,7 +477,16 @@ static int indexview(lua_State *L){
 				str = lua_tolstring(L,2,&len);
 				if(len==4){
 					switch(str[0]){
-						case 't': if(!strcmp(str+1,"ype")){lua_pushlstring(L,types[ud->type],strlen(types[ud->type]));return 1;}  break;
+						case 't': 
+							if(!strcmp(str+1,"ype")){
+								lua_pushlstring(L,types[ud->type],strlen(types[ud->type]));
+								return 1;
+							}else if(!strcmp(str+1,"his")){
+								lua_pop(L,1);
+								lua_rawget(L,lua_upvalueindex(1));
+								return 1;
+							}
+							break;
 						case 'f': 
 							if(!strcmp(str+1,"rom")){
 								if(ud->data < ud->blob->data+ud->blob->size)
@@ -589,7 +562,17 @@ static int nindexview(lua_State *L){
 				str = lua_tolstring(L,2,&len);
 				if(len == 4){
 					switch(str[0]){
-						case 't': if(!strcmp(str+1,"ype")){ ud->type=luaL_checkoption(L,3,NULL,types); return 0;} break;
+						case 't': 
+							if(!strcmp(str+1,"ype")){
+								ud->type=luaL_checkoption(L,3,NULL,types);
+								return 0;
+							}else if(!strcmp(str+1,"his")){
+								lua_pushvalue(L,1);
+								lua_pushvalue(L,-2);
+								lua_rawset(L,lua_upvalueindex(1));
+								return 0;
+							}
+							break;
 						case 'f': if(!strcmp(str+1,"rom")){i=luaL_checkint(L,3); if(--i < ud->blob->size) ud->data = ud->blob->data+i; if(ud->data-ud->blob->data + ud->size > ud->blob->size) ud->size = ud->blob->size - (ud->data-ud->blob->data);
 							return 0;} break;
 						case 's': if(!strcmp(str+1,"ize")){if((i=luaL_optint(L,3,0)) <= ud->blob->size) ud->size=i; return 0;} break;
@@ -710,7 +693,6 @@ static int findview(lua_State *L){
 
 static const struct luaL_reg voidmethods [] = {
 	{"__index", indexvoid},
-	{"__newindex", nindexvoid},
 	{"__call",callvoid},
 	{NULL, NULL}
 };
