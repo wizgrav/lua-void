@@ -454,8 +454,8 @@ static int gcview(lua_State *L){
 
 static int indexview(lua_State *L){
 	void_t *ud;
-	VIEWCHECK(ud,1);
 	size_t index;
+	VIEWCHECK(ud,1);
 	index = (size_t)lua_tointeger(L, 2);
 	if(index){
 		index--;
@@ -510,10 +510,11 @@ static int indexview(lua_State *L){
 
 static int nindexview(lua_State *L){
 	void_t *ud,*vd;
+	int32_t i, len;
+	size_t index;
 	union {uint8_t u8;int8_t s8;uint16_t u16;int16_t s16;uint32_t u32;int32_t s32;float fl;double dl;} u;
 	unsigned const char *str;
-	int32_t i,len;
-	size_t index  = (size_t) lua_tointeger(L,2);
+	index  = (size_t) lua_tointeger(L,2);
 	VIEWCHECK(ud,1);
 	if(index){
 		index--;
