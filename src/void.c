@@ -37,7 +37,9 @@ static int indexvoid(lua_State *L){
 	nd->key = strdup(str);
 	nd->hash = hash;
 	nd->len = 0;
+#if defined __linux
 	nd->fd=0;
+#endif
 	nd->count = 1;
 	nd->previous = NULL;
 	nd->head=NULL;

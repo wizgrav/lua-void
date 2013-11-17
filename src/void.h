@@ -96,8 +96,8 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 #define HASH(hash,key,len)\
   while(len--)\
     hash = hash << 5 + hash + key[len]
-#define VIEWCHECK(ud,index) \
-	ud = (void_t *) lua_touserdata(L,index);\
+#define VIEWCHECK(ud,idx) \
+	ud = (void_t *) lua_touserdata(L,idx);\
 	if(!ud->blob) LUA_ERROR("Neutered void.view")
 #define LINKCHECK(ud) ud = *(link_t **) lua_touserdata(L,1)
 #define FREEBLOB(ud)\
