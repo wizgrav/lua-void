@@ -45,12 +45,12 @@ typedef CRITICAL_SECTION pthread_mutex_t;
 #define pthread_mutex_unlock(m) LeaveCriticalSection(m)
 typedef CONDITION_VARIABLE pthread_cond_t;
 #define PTHREAD_COND_INITIALIZER {0)
-#define pthread_cond_init(c,a) InitializeConditionVariable(c,a)
+#define pthread_cond_init(c,a) InitializeConditionVariable(c)
 #define pthread_cond_destroy(c) (void)c
 #define pthread_cond_wait(c,m) SleepConditionVariableCS(c,m,INFINITE)
 #define pthread_cond_broadcast(c) WakeAllConditionVariable(c)
-#define SEND(s,d,l) WSASend(s,d,l,0)
-#define RECV(s,d,l) WSARecv(s,d,l,0)
+#define SEND(s,d,l) send(s,d,l,0)
+#define RECV(s,d,l) recv(s,d,l,0)
 #define ERRNO WSAGetLastError()
 #else
 #include <pthread.h>
@@ -109,7 +109,7 @@ typedef CONDITION_VARIABLE pthread_cond_t;
 	k=j<<shift;\
 	i=i<<shift;\
 	if(ud->size < i + k){ lua_pushnil(L);return 1;}\
-	for(s = (void *) (ud->data+i),e = s + k;s != e; s+=incr)\
+	for(s = (char *) (ud->data+i),e = s + k;s != e; s+=incr)\
 		lua_push ## unit(L,(lt)*((type *)s))
 #define VCLOSURE(name,func)\
 	lua_pushstring(L, name);\

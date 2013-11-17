@@ -455,7 +455,8 @@ static int gcview(lua_State *L){
 static int indexview(lua_State *L){
 	void_t *ud;
 	VIEWCHECK(ud,1);
-	uint32_t index  = (uint32_t) lua_tointeger(L,2);
+	size_t index;
+	index = (size_t)lua_tointeger(L, 2);
 	if(index){
 		index--;
 		switch(ud->type){
@@ -512,7 +513,7 @@ static int nindexview(lua_State *L){
 	union {uint8_t u8;int8_t s8;uint16_t u16;int16_t s16;uint32_t u32;int32_t s32;float fl;double dl;} u;
 	unsigned const char *str;
 	int32_t i,len;
-	uint32_t index  = (uint32_t) lua_tointeger(L,2);
+	size_t index  = (size_t) lua_tointeger(L,2);
 	VIEWCHECK(ud,1);
 	if(index){
 		index--;
@@ -588,9 +589,9 @@ static int nindexview(lua_State *L){
 
 static int callview(lua_State *L){
 	void_t *ud,*vd;
-	void *s,*e;
+	char *s,*e;
 	size_t len;
-	uint32_t i,j,k;
+	size_t i,j,k;
 	VIEWCHECK(ud,1);
 	switch(lua_gettop(L)){
 		case 1: lua_pushlstring(L,(const char *)ud->data,ud->size); return 1;
