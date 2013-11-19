@@ -165,9 +165,6 @@ typedef struct void_t {
 typedef struct link_t link_t;
 
 typedef struct link_t{
-#if defined __linux
-	int fd;
-#endif
 	uint8_t *key;
     lua_State *state;
     blob_t *head,**tail;

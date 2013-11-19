@@ -37,9 +37,6 @@ static int indexvoid(lua_State *L){
 	nd->key = strdup(str);
 	nd->hash = hash;
 	nd->len = 0;
-#if defined __linux
-	nd->fd=0;
-#endif
 	nd->count = 1;
 	nd->previous = NULL;
 	nd->head=NULL;
@@ -124,9 +121,6 @@ static int nindexlink(lua_State *L){
 	blob_t *blob,*bl;
 	void_t *ud;
 	int32_t wait;
-#if defined __linux
-	uint64_t u;
-#endif
 	size_t len;
 	char *s;
 	LINKCHECK(link);
@@ -182,9 +176,6 @@ static int nindexlink(lua_State *L){
 			link->len++;
 			link->state=L;
 			if(link->waiters) pthread_cond_broadcast(&link->cond);
-#if defined __linux
-			if(link->fd){ u=1; write(link->fd,&u,sizeof(uint64_t));};
-#endif
 		}
 	}else{
 		if(blob){ 
@@ -196,9 +187,6 @@ static int nindexlink(lua_State *L){
 		blob=link->head;
 		QUEUE_POP(link);
 		if(link->waiters) pthread_cond_broadcast(&link->cond);
-#if defined __linux
-		if(link->fd){ u=1; write(link->fd,&u,sizeof(uint64_t));};
-#endif
 	}
 	pthread_mutex_unlock(&link->mutex);
 	if(blob) 
@@ -218,9 +206,6 @@ static int calllink(lua_State *L){
 	blob_t *blob;
 	void_t *ud;
 	size_t len;
-#if defined __linux
-	uint64_t u;
-#endif
 	char *s;
 	int fd;
 	LINKCHECK(link);
@@ -246,16 +231,6 @@ static int calllink(lua_State *L){
 			blob=NULL;
 			ud=NULL;
 			break;
-#if defined __linux
-		case LUA_TNONE:
-			if(!link->fd){
-				fd = eventfd(0,0);
-				if(fd < 0) LUA_ERROR("Error creating an event fd");
-				link->fd=fd;
-			}
-			lua_pushinteger(L,link->fd);
-			return 1;
-#endif
 		case LUA_TUSERDATA:
 			ud = (void_t *) luaL_checkudata(L,2,"void.view");
 			if(!ud->blob) LUA_ERROR("Neutered void.view");
@@ -288,9 +263,6 @@ static int calllink(lua_State *L){
 			link->state=L;
 			if(link->waiters) 
 				pthread_cond_broadcast(&link->cond);
-#if defined __linux
-			if(link->fd){ u=1; write(link->fd,&u,sizeof(uint64_t));};
-#endif
 		}
 	}while(0);
 	pthread_mutex_unlock(&link->mutex);
@@ -334,9 +306,6 @@ static int gclink(lua_State *L){
 		free(link->key);
 		pthread_mutex_destroy(&link->mutex);
 		pthread_cond_destroy(&link->cond);
-#if defined __linux
-		if(link->fd) close(link->fd);
-#endif
 		free(link);
 	}
 	if(error){

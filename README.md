@@ -123,5 +123,3 @@ The provided void.view can come out bufferless(neutered) in this case a buffer m
 It swaps the buffer at the top of the queue with the one provided, if the queue is empty or __the last push/swap happened on a different thread__. This is useful to implement triple buffering setups
 
 If wait is provided and true it will block until another thread pushes/swaps a buffer
-
-(LINUX ONLY) when called with no arguments, returns an eventfd that triggers when something is pushed/swapped on the queue
