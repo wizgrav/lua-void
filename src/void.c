@@ -544,7 +544,7 @@ static int nindexview(lua_State *L){
 						return 0;
 					}else if(*((int32_t *)str) == *((int32_t *)"this")){
 						lua_pushvalue(L,1);
-						lua_pushvalue(L,-2);
+						lua_pushvalue(L,3);
 						lua_rawset(L,lua_upvalueindex(1));
 						return 0;
 					}else if(*((int32_t *)str) == *((int32_t *)"type")){
