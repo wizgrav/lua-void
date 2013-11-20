@@ -448,27 +448,22 @@ static int indexview(lua_State *L){
 			case LUA_TSTRING:
 				str = lua_tolstring(L,2,&len);
 				if(len==4){
-					switch(str[0]){
-						case 't': 
-							if(!strcmp(str+1,"ype")){
-								lua_pushlstring(L,types[ud->type],strlen(types[ud->type]));
-								return 1;
-							}else if(!strcmp(str+1,"his")){
-								lua_pop(L,1);
-								lua_rawget(L,lua_upvalueindex(1));
-								return 1;
-							}
-							break;
-						case 'f': 
-							if(!strcmp(str+1,"rom")){
-								if(ud->data < ud->blob->data+ud->blob->size)
-									lua_pushinteger(L,(lua_Integer) (ud->data-ud->blob->data)+1);
-								else lua_pushnil(L);
-								return 1;
-							} 
-							break;
-						case 's': if(!strcmp(str+1,"ize")){lua_pushinteger(L,(lua_Integer) ud->size);return 1;} break;
-						case 'b': if(!strcmp(str+1,"lob")){lua_pushinteger(L,(lua_Integer) ud->blob->size);return 1;} break;
+					if(*((int32_t *)str) == *((int32_t *)"from")){
+						lua_pushinteger(L,(lua_Integer) (ud->data-ud->blob->data)+1);
+						return 1;
+					}else if(*((int32_t *)str) == *((int32_t *)"size")){
+						lua_pushinteger(L,(lua_Integer) ud->size);
+						return 1;
+					}else if(*((int32_t *)str) == *((int32_t *)"this")){
+						lua_pop(L,1);
+						lua_rawget(L,lua_upvalueindex(1));
+						return 1;
+					}else if(*((int32_t *)str) == *((int32_t *)"type")){
+						lua_pushlstring(L,types[ud->type],strlen(types[ud->type]));
+						return 1;
+					}else if(*((int32_t *)str) == *((int32_t *)"blob")){
+						lua_pushinteger(L,(lua_Integer) ud->blob->size);
+						return 1;
 					}
 				}
 		}
@@ -534,21 +529,27 @@ static int nindexview(lua_State *L){
 			case LUA_TSTRING:
 				str = lua_tolstring(L,2,&len);
 				if(len == 4){
-					switch(str[0]){
-						case 't': 
-							if(!strcmp(str+1,"ype")){
-								ud->type=luaL_checkoption(L,3,NULL,types);
-								return 0;
-							}else if(!strcmp(str+1,"his")){
-								lua_pushvalue(L,1);
-								lua_pushvalue(L,-2);
-								lua_rawset(L,lua_upvalueindex(1));
-								return 0;
-							}
-							break;
-						case 'f': if(!strcmp(str+1,"rom")){i=luaL_checkint(L,3); if(--i < ud->blob->size) ud->data = ud->blob->data+i; if(ud->data-ud->blob->data + ud->size > ud->blob->size) ud->size = ud->blob->size - (ud->data-ud->blob->data);
-							return 0;} break;
-						case 's': if(!strcmp(str+1,"ize")){if((i=luaL_optint(L,3,0)) <= ud->blob->size) ud->size=i; return 0;} break;
+					if(*((int32_t *)str) == *((int32_t *)"from")){
+						i=luaL_checkint(L,3); 
+						if(--i < ud->blob->size) 
+							ud->data = ud->blob->data+i;
+						else
+							luaL_argerror(L,3,"out of bounds");
+						if(ud->data-ud->blob->data + ud->size > ud->blob->size) 
+							ud->size = ud->blob->size - (ud->data-ud->blob->data);
+						return 0;
+					}else if(*((int32_t *)str) == *((int32_t *)"size")){
+						if((i=luaL_optint(L,3,0)) <= ud->blob->size) 
+							ud->size=i; 
+						return 0;
+					}else if(*((int32_t *)str) == *((int32_t *)"this")){
+						lua_pushvalue(L,1);
+						lua_pushvalue(L,-2);
+						lua_rawset(L,lua_upvalueindex(1));
+						return 0;
+					}else if(*((int32_t *)str) == *((int32_t *)"type")){
+						ud->type=luaL_checkoption(L,3,NULL,types);
+						return 0;
 					}
 				}
 		}
