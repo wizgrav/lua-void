@@ -456,7 +456,7 @@ static int indexview(lua_State *L){
 						return 1;
 					}else if(*((int32_t *)str) == *((int32_t *)"this")){
 						lua_pop(L,1);
-						lua_gettable(L,lua_upvalueindex(1));
+						lua_rawget(L,lua_upvalueindex(1));
 						return 1;
 					}else if(*((int32_t *)str) == *((int32_t *)"type")){
 						lua_pushlstring(L,types[ud->type],strlen(types[ud->type]));
@@ -545,7 +545,7 @@ static int nindexview(lua_State *L){
 					}else if(*((int32_t *)str) == *((int32_t *)"this")){
 						lua_pushvalue(L,1);
 						lua_pushvalue(L,3);
-						lua_settable(L,lua_upvalueindex(1));
+						lua_rawset(L,lua_upvalueindex(1));
 						return 0;
 					}else if(*((int32_t *)str) == *((int32_t *)"type")){
 						ud->type=luaL_checkoption(L,3,NULL,types);
@@ -673,7 +673,6 @@ static const struct luaL_reg voidmethods [] = {
 
 static const struct luaL_reg viewmethods [] = {
 	{"__len", lenview},
-	{"__newindex", nindexview},
 	{"__call",callview},
 	{"__tostring", printview},
 	{NULL, NULL}
@@ -704,6 +703,7 @@ int32_t LUA_API luaopen_void (lua_State *L) {
 	lua_pushvalue(L,-3);
 	lua_settable(L, -3);
 	VCLOSURE("__index",indexview);
+	VCLOSURE("__newindex",nindexview);
 	VCLOSURE("__gc",gcview);
 	VCLOSURE("__unm",unmview);
 	VCLOSURE("__add",addview);
