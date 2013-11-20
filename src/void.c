@@ -430,7 +430,7 @@ static int indexview(lua_State *L){
 		index--;
 		switch(ud->type){
 			case VOID_TYPE_U8:  if(index < ud->size) lua_pushinteger(L,(lua_Integer) ((uint8_t *)(ud->data))[index]);  else return 0; break;
-			case VOID_TYPE_S8:  if(index < ud->size) lua_pushinteger(L,(lua_Integer) ((char *)(ud->data))[index]);  else return 0; break;
+			case VOID_TYPE_S8:  if(index < ud->size) lua_pushinteger(L,(lua_Integer) ((int8_t *)(ud->data))[index]);  else return 0; break;
 			case VOID_TYPE_U16: if(index < ud->size >> 1) lua_pushinteger(L,(lua_Integer) ((uint16_t *)(ud->data))[index]); else return 0;  break;
 			case VOID_TYPE_S16: if(index < ud->size >> 1) lua_pushinteger(L,(lua_Integer) ((int16_t *)(ud->data))[index]); else return 0;  break;
 			case VOID_TYPE_U32: if(index < ud->size >> 2) lua_pushnumber(L,(lua_Number) ((uint32_t *)(ud->data))[index]); else return 0;  break;
@@ -484,7 +484,7 @@ static int nindexview(lua_State *L){
 		index--;
 		switch(ud->type){
 			case VOID_TYPE_U8:  if(index < ud->size)  ((uint8_t *)(ud->data))[index] = (uint8_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
-			case VOID_TYPE_S8:  if(index < ud->size)  ((char *)(ud->data))[index] = (char)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
+			case VOID_TYPE_S8:  if(index < ud->size)  ((int8_t *)(ud->data))[index] = (int8_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
 			case VOID_TYPE_U16: if(index < ud->size >> 1)  ((uint16_t *)(ud->data))[index] = (uint16_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
 			case VOID_TYPE_S16: if(index < ud->size >> 1)  ((int16_t *)(ud->data))[index] = (int16_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
 			case VOID_TYPE_U32: if(index < ud->size >> 2)  ((uint32_t *)(ud->data))[index] = (uint32_t)lua_tointeger(L,3); else LUA_ERROR("invalid index"); break;
