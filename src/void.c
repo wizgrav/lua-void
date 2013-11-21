@@ -258,6 +258,7 @@ static int calllink(lua_State *L){
 				blob=link->head;
 				QUEUE_POP(link);
 			}else{
+				blob=NULL;
 				link->len++;
 			}
 			link->state=L;
@@ -271,7 +272,10 @@ static int calllink(lua_State *L){
 		 ud->blob=blob;
 		 ud->data=blob->data;
 		 ud->size=blob->size;
-		}else free(blob);}
+		}else{
+			free(blob);
+		}
+	}
 	lua_pushboolean(L,len);
 	return 1;
 }
