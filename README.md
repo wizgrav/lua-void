@@ -26,6 +26,18 @@ Each queue has it own lock for buffer operations but a global lock is used when 
 void.view
 ---------
 You can attach your own metaevents(like gc) on the view metatable except index, newindex, call and len. In addition all other properties you attach to the metatable will be available to all void.views(read and write below are default methods)
+You can use the userdata in othe C/API modules. The struct format, which is not expected to change, is
+
+```cpp
+
+struct {
+  int type; // Type flag in case you need to respect it. 0=u8, s8, u16, s16, u32, s32, float, double=7
+  int size; // Size as declared in Lua, the underlying capacity will always be at least 8 bytes larger
+  char *data; // Pointer to some part of the underlying buffer as specified by the view.from property
+  void *blob; // Pointer to the actual buffer. No need to mess with it. Will be NULL on a neutered view.
+}
+
+```
 
 ###view.type = string ###
 
@@ -87,14 +99,14 @@ returns the amount read or nil if some error occured
 
 ### view_index, buffer_index = view:find(substring)###
 
-Locates the index of the provided substring ***in the current view slice***
+Locates the index of the provided substring using strstr(NUL sensitive)
 
 returns the indexes, relative to the view slice and the full buffer, where the substring starts or nils if it wasn't found.
 
 ***
 void.link
 ---------
-You can attach a gc metamethod on the link metatable which triggers when you lose the local reference, but the shared queue will be automatically disposed when there are no references to it and doen't have any buffers attached. In addition all other properties you attach to the metatable will be available to all void.links ***in the same thread you set them***
+You can attach a gc metamethod on the link metatable which triggers when you lose the local reference, but the shared queue will be automatically disposed when there are no references to it and doesn't have any buffers attached. In addition all other properties you attach to the metatable will be available to all void.links ***in the same thread you set them***
 
 ### #link (len operator)###
 
@@ -114,7 +126,7 @@ It pushes the buffer provided to the queue(or a copy of the string or doesn't pu
 
 If the queue length is >= than index it also pops a buffer and attaches it to the void.view(or frees it if string/nil was provided)
 
-A negative index will block the thread until the operation, indicated by the absolute value of the index, can be performed
+A zero or dnegative index will block the thread until the operation, indicated by the absolute value of the index, can be performed
 
 The provided void.view can come out bufferless(neutered) in this case a buffer must be reattached to access it again
 
