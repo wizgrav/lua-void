@@ -5,9 +5,14 @@ local function tf(id)
 	local link = void.link
 	local v = void(16)
 	for i=1,10 do
-		v[0] = "Message "..id..i
+		v[0] = "Message "..id.."-"..i
 		local ok = link(v,true)
-		if ok then print("Thread "..id.." got "..v()) end
+		if #v then 
+			print("Thread "..id.." got "..v()) 
+		else 
+			v=void(16) 
+			print("Thread "..id.." view was neutered")
+		end
 	end
 end
 

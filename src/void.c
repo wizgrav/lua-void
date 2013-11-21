@@ -250,7 +250,6 @@ static int calllink(lua_State *L){
 			len=1;
 		}else if(link->state == L){
 			len=0;
-			break;
 		}
 		if(blob){ 
 			QUEUE_PUSH(link,blob);
