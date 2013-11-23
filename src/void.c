@@ -79,9 +79,9 @@ static int indexlink(lua_State *L){
 	link_t *link;
 	blob_t *blob=NULL;
 	void_t *ud;
-	int32_t wait;
+	int32_t wait,i;
 	LINKCHECK(link);
-	int32_t i = (int32_t) lua_tointeger(L,2);
+	i = (int32_t) lua_tointeger(L,2);
 	wait = i<0 ? 1:0;
 	i=abs(i);	
 	pthread_mutex_lock(&link->mutex);
@@ -120,11 +120,11 @@ static int nindexlink(lua_State *L){
 	link_t *link;
 	blob_t *blob,*bl;
 	void_t *ud;
-	int32_t wait;
+	int32_t wait,i;
 	size_t len;
 	char *s;
 	LINKCHECK(link);
-	int32_t i = (int32_t) lua_tointeger(L,2);
+	i = (int32_t) lua_tointeger(L,2);
 	switch(lua_type(L,3)){
 		case LUA_TSTRING: 
 			s = (char *)lua_tolstring(L,3,&len);
