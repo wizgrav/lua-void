@@ -27,11 +27,12 @@ THE SOFTWARE.
 #include "void.h"
 
 static int indexvoid(lua_State *L){
-	int32_t hash=0;
+	int32_t hash;
 	size_t len;
-	link_t *ud,*nd,**sd, **link;
+	link_t *ud,*nd,**sd,**link;
 	const uint8_t *str = NULL;
 	str = luaL_checklstring(L,2,&len);
+	hash = 0;
 	HASH(hash,str,len);
 	nd = (link_t *)malloc(sizeof(link_t));
 	nd->key = strdup(str);
@@ -77,10 +78,11 @@ static int indexvoid(lua_State *L){
 
 static int indexlink(lua_State *L){
 	link_t *link;
-	blob_t *blob=NULL;
+	blob_t *blob;
 	void_t *ud;
 	int32_t wait,i;
 	LINKCHECK(link);
+	blob=NULL;
 	i = (int32_t) lua_tointeger(L,2);
 	wait = i<0 ? 1:0;
 	i=abs(i);	
@@ -282,7 +284,9 @@ static int calllink(lua_State *L){
 
 static int gclink(lua_State *L){
 	link_t *link,**sp;
-	int32_t release=0,error=0;
+	int32_t release,error;
+	release=0;
+	error=0;
 	LINKCHECK(link);
 	lua_pushlstring(L,"__gc",4);
 	lua_rawget(L,lua_upvalueindex(1));
@@ -345,9 +349,11 @@ static int printview(lua_State *L){
 }
 
 static int callvoid(lua_State *L){
-	void_t *ud=NULL;
-	blob_t *old = NULL;
+	void_t *ud;
+	blob_t *old;
 	uint32_t size;
+	ud=NULL;
+	old=NULL;
 	if(lua_isuserdata(L,3)){
 		ud = luaL_checkudata(L,3,"void.view");
 		if(ud->blob) old=ud->blob;
