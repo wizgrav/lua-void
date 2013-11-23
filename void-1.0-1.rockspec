@@ -2,7 +2,7 @@ package = "Void"
 version = "1.0-1"
 source = {
    url= "git://github.com/wizgrav/lua-void.git",
-	branch= "v1.0"
+	branch= "master"
 }
 description = {
    summary = "Memory buffers that support typed accesing and cross thread transfer.",
