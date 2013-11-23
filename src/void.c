@@ -208,8 +208,9 @@ static int calllink(lua_State *L){
 	size_t len;
 	char *s;
 	int fd;
+	int32_t wait;
 	LINKCHECK(link);
-	int32_t wait = (int32_t) (lua_isboolean(L,3)?lua_toboolean(L,3):0);
+	wait = (int32_t) (lua_isboolean(L,3)?lua_toboolean(L,3):0);
 	switch(lua_type(L,2)){
 		case LUA_TSTRING: 
 			s = (char *)lua_tolstring(L,3,&len);
