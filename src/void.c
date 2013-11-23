@@ -29,7 +29,7 @@ THE SOFTWARE.
 static int indexvoid(lua_State *L){
 	int32_t hash=0;
 	size_t len;
-	link_t *ud,*nd,**sd;
+	link_t *ud,*nd,**sd, **link;
 	const uint8_t *str = NULL;
 	str = luaL_checklstring(L,2,&len);
 	HASH(hash,str,len);
@@ -68,7 +68,7 @@ static int indexvoid(lua_State *L){
 		pthread_mutex_unlock(&Void.mutex);
 		ud=nd;
 	}
-	link_t **link = (link_t **)lua_newuserdata(L,sizeof(link_t *));
+	link = (link_t **)lua_newuserdata(L,sizeof(link_t *));
 	luaL_getmetatable(L,"void.link");
 	lua_setmetatable(L,-2);
 	*link = ud;
