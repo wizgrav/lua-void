@@ -593,10 +593,10 @@ static int callview(lua_State *L){
 }
 
 static int readview(lua_State *L){
-	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
-	luaL_argcheck(L,ud->data,1,"Neutered view");
 	FILE *fp;
 	int ret;
+	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
+	luaL_argcheck(L,ud->data,1,"Neutered view");
 	switch(lua_type(L,2)){
 		case LUA_TNUMBER:
 			ret = RECV(((SOCKET)luaL_checkinteger(L,2)),ud->data,ud->size);
@@ -618,10 +618,10 @@ static int readview(lua_State *L){
 }
 
 static int writeview(lua_State *L){
-	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
-	luaL_argcheck(L,ud->data,1,"Neutered view");
 	FILE *fp;
 	int ret;
+	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
+	luaL_argcheck(L,ud->data,1,"Neutered view");
 	switch(lua_type(L,2)){
 		case LUA_TNUMBER:
 			ret = SEND(((SOCKET)luaL_checkinteger(L,2)),ud->data,ud->size);
@@ -643,13 +643,14 @@ static int writeview(lua_State *L){
 }
 
 static int findview(lua_State *L){
-	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
-	luaL_argcheck(L,ud->data,1,"Neutered view");
 	FILE *fp;
 	int ret;
 	size_t len;
 	char c,*found;
-	const char *str = lua_tolstring(L,2,&len);
+	const char *str;
+	void_t *ud = (void_t *)luaL_checkudata(L,1,"void.view");
+	luaL_argcheck(L,ud->data,1,"Neutered view");
+	str = lua_tolstring(L,2,&len);
 	if(str && len){
 		c = ud->data[ud->size];
 		ud->data[ud->size] = 0;
